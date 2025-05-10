@@ -54,8 +54,17 @@ class App {
         return;
       }
 
-      this.#content.innerHTML = await page.render();
-      await page.afterRender();
+      // Implementasi View Transition API
+      if (document.startViewTransition) {
+        await document.startViewTransition(async () => {
+          this.#content.innerHTML = await page.render();
+          await page.afterRender();
+        }).finished;
+      } else {
+        // Fallback untuk browser yang tidak mendukung View Transition API
+        this.#content.innerHTML = await page.render();
+        await page.afterRender();
+      }
       
       // Scroll ke atas setelah navigasi
       window.scrollTo(0, 0);
