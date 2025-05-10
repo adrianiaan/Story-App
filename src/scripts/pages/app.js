@@ -1,18 +1,19 @@
+import UrlParser from '../routes/url-parser';
 import routes from '../routes/routes';
-import { getActiveRoute } from '../routes/url-parser';
+import AuthUtils from '../utils/auth-utils';
 
 class App {
-  #content = null;
-  #drawerButton = null;
-  #navigationDrawer = null;
-
-  constructor({ navigationDrawer, drawerButton, content }) {
+  constructor({ content, drawerButton, navigationDrawer }) {
     this.#content = content;
     this.#drawerButton = drawerButton;
     this.#navigationDrawer = navigationDrawer;
 
     this._setupDrawer();
   }
+
+  #content;
+  #drawerButton;
+  #navigationDrawer;
 
   _setupDrawer() {
     this.#drawerButton.addEventListener('click', () => {
@@ -28,16 +29,48 @@ class App {
         if (link.contains(event.target)) {
           this.#navigationDrawer.classList.remove('open');
         }
-      })
+      });
     });
   }
 
   async renderPage() {
-    const url = getActiveRoute();
-    const page = routes[url];
+    try {
+      // Update auth menu setiap kali halaman dirender
+      AuthUtils.updateAuthMenu();
+      
+      const url = UrlParser.parseActiveUrlWithCombiner();
+      const page = routes[url];
 
-    this.#content.innerHTML = await page.render();
-    await page.afterRender();
+      if (!page) {
+        this.#content.innerHTML = `
+          <div class="container">
+            <div class="error-page">
+              <h2>404 - Halaman Tidak Ditemukan</h2>
+              <p>Maaf, halaman yang Anda cari tidak ditemukan.</p>
+              <a href="#/" class="btn btn-primary">Kembali ke Beranda</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      this.#content.innerHTML = await page.render();
+      await page.afterRender();
+      
+      // Scroll ke atas setelah navigasi
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.error('Error rendering page:', error);
+      this.#content.innerHTML = `
+        <div class="container">
+          <div class="error-page">
+            <h2>Terjadi Kesalahan</h2>
+            <p>Maaf, terjadi kesalahan saat memuat halaman.</p>
+            <a href="#/" class="btn btn-primary">Coba Lagi</a>
+          </div>
+        </div>
+      `;
+    }
   }
 }
 

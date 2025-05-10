@@ -1,22 +1,13 @@
-const path = require('path');
-const common = require('./webpack.common.js');
 const { merge } = require('webpack-merge');
+const path = require('path');
+const common = require('./webpack.common');
 
 module.exports = merge(common, {
   mode: 'development',
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
-      },
-    ],
-  },
+  devtool: 'inline-source-map',
   devServer: {
     static: path.resolve(__dirname, 'dist'),
+    open: true,
     port: 9000,
     client: {
       overlay: {
@@ -24,5 +15,21 @@ module.exports = merge(common, {
         warnings: true,
       },
     },
+    compress: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+        ],
+      },
+    ],
   },
 });

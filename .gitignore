@@ -1,8 +1,4 @@
-# Directories
-.idea
-.vscode
-node_modules
-dist
-
-# Files
+node_modules/
+dist/
+.DS_Store
 .env

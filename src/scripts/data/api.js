@@ -4,8 +4,8 @@ const API_ENDPOINT = {
   REGISTER: `${CONFIG.BASE_URL}/register`,
   LOGIN: `${CONFIG.BASE_URL}/login`,
   GET_ALL_STORIES: `${CONFIG.BASE_URL}/stories`,
+  GET_DETAIL_STORY: (id) => `${CONFIG.BASE_URL}/stories/${id}`,
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
-  DETAIL_STORY: (id) => `${CONFIG.BASE_URL}/stories/${id}`,
 };
 
 class StoryApiService {
@@ -51,7 +51,7 @@ class StoryApiService {
   }
 
   static async getDetailStory(id, token) {
-    const response = await fetch(API_ENDPOINT.DETAIL_STORY(id), {
+    const response = await fetch(API_ENDPOINT.GET_DETAIL_STORY(id), {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -60,16 +60,7 @@ class StoryApiService {
     return response.json();
   }
 
-  static async addStory({ description, photo, lat, lon }, token) {
-    const formData = new FormData();
-    formData.append('description', description);
-    formData.append('photo', photo);
-    
-    if (lat !== null && lon !== null) {
-      formData.append('lat', lat);
-      formData.append('lon', lon);
-    }
-
+  static async addStory(formData, token) {
     const response = await fetch(API_ENDPOINT.ADD_STORY, {
       method: 'POST',
       headers: {
