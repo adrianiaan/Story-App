@@ -1,12 +1,12 @@
 const UrlParser = {
   parseActiveUrlWithCombiner() {
     const url = window.location.hash.slice(1).toLowerCase();
-    const splitedUrl = this._urlSplitter(url);
-    return this._urlCombiner(splitedUrl);
+    return this._urlCombiner(url);
   },
-
+  
+  // Mempertahankan case sensitivity untuk ID resource
   parseActiveUrlWithoutCombiner() {
-    const url = window.location.hash.slice(1).toLowerCase();
+    const url = window.location.hash.slice(1);
     return this._urlSplitter(url);
   },
 
@@ -19,18 +19,10 @@ const UrlParser = {
     };
   },
 
-  _urlCombiner(splitedUrl) {
-    return (
-      (splitedUrl.resource ? `/${splitedUrl.resource}` : '/')
-      + (splitedUrl.id ? '/:id' : '')
-      + (splitedUrl.verb ? `/${splitedUrl.verb}` : '')
-    );
+  _urlCombiner(url) {
+    const splittedUrl = this._urlSplitter(url);
+    return splittedUrl.resource ? `/${splittedUrl.resource}${splittedUrl.id ? '/:id' : ''}${splittedUrl.verb ? `/${splittedUrl.verb}` : ''}` : '/';
   },
 };
-
-export function getActiveRoute() {
-  const url = UrlParser.parseActiveUrlWithCombiner();
-  return url === '/' ? '/' : url;
-}
 
 export default UrlParser;
