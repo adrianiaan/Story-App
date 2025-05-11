@@ -15,7 +15,7 @@ body {
 /* Skip to content - aksesibilitas */
 .skip-link {
   position: absolute;
-  top: -50px;
+  top: -100px;
   left: 100vh;
   background-color: #0d6efd;
   color: white;
