@@ -1,11 +1,14 @@
-const AUTH_KEY = 'story_app_auth';
+const AUTH_KEY = "story_app_auth";
 
 const AuthUtils = {
   setAuth(token, user) {
-    localStorage.setItem(AUTH_KEY, JSON.stringify({
-      token,
-      user,
-    }));
+    localStorage.setItem(
+      AUTH_KEY,
+      JSON.stringify({
+        token,
+        user,
+      })
+    );
   },
 
   getAuth() {
@@ -21,26 +24,36 @@ const AuthUtils = {
   },
 
   isLoggedIn() {
-    const { token } = this.getAuth();
-    return !!token;
+    const { token, user } = this.getAuth();
+    return !!token && !!user && !!user.name; // Pastikan semua data yang diperlukan ada
   },
 
   // Fungsi untuk memperbarui menu navigasi berdasarkan status login
   updateAuthMenu() {
-    const authMenu = document.getElementById('auth-menu');
-    
+    const authMenu = document.getElementById("auth-menu");
+    if (!authMenu) return;
+
     if (this.isLoggedIn()) {
       const { user } = this.getAuth();
-      authMenu.innerHTML = `
+      if (user && user.name) {
+        authMenu.innerHTML = `
         <a href="#/" id="logout-button">Logout (${user.name})</a>
       `;
-      
-      document.getElementById('logout-button').addEventListener('click', (event) => {
-        event.preventDefault();
+
+        const logoutButton = document.getElementById("logout-button");
+        if (logoutButton) {
+          logoutButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            this.destroyAuth();
+            window.location.href = "#/login";
+            this.updateAuthMenu();
+          });
+        }
+      } else {
+        // Jika data user tidak lengkap, hapus autentikasi
         this.destroyAuth();
-        window.location.href = '#/login';
-        this.updateAuthMenu();
-      });
+        authMenu.innerHTML = '<a href="#/login">Masuk</a>';
+      }
     } else {
       authMenu.innerHTML = '<a href="#/login">Masuk</a>';
     }
