@@ -66,3 +66,42 @@ export const createRegisterFormTemplate = () => `
     <p>Sudah punya akun? <a href="#/login">Masuk di sini</a></p>
   </div>
 `;
+
+export const createAddStoryFormTemplate = () => `
+  <div class="add-story-form">
+    <h2 class="content__heading">Tambah Cerita Baru</h2>
+    <form id="addStoryForm">
+      <div class="form-group">
+        <label for="description">Deskripsi</label>
+        <textarea id="description" name="description" required></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="photo">Foto</label>
+        <input type="file" id="photo" name="photo" accept="image/*" required>
+        <div class="camera-container">
+          <video id="cameraPreview" autoplay playsinline style="display:none;"></video>
+          <canvas id="photoCanvas" style="display:none;"></canvas>
+          <div class="camera-buttons">
+            <button type="button" id="startCamera" class="btn">Buka Kamera</button>
+            <button type="button" id="capturePhoto" class="btn" disabled>Ambil Foto</button>
+            <button type="button" id="retakePhoto" class="btn" style="display:none;">Ambil Ulang</button>
+          </div>
+          <div id="photoPreview" class="photo-preview"></div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Lokasi (Opsional)</label>
+        <div id="mapContainer" class="map-container">
+          <div id="addStoryMap" class="add-story-map"></div>
+          <p id="selectedLocation">Klik pada peta untuk memilih lokasi</p>
+        </div>
+      </div>
+      
+      <div class="form-group form-action">
+        <button type="submit" class="btn btn-primary">Tambah Cerita</button>
+      </div>
+    </form>
+  </div>
+`;

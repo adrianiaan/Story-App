@@ -1,47 +1,13 @@
-import StoryApiService from '../../data/api';
 import AuthUtils from '../../utils/auth-utils';
+import StoryApiService from '../../data/api';
 import { initMapForAddStory } from '../../utils/map-initializer';
+import { createAddStoryFormTemplate } from '../../templates/template-creator';
 
 export default class AddPage {
   async render() {
     return `
       <div class="content container">
-        <h2 class="content__heading">Tambah Cerita Baru</h2>
-        <div class="add-story-form">
-          <form id="addStoryForm">
-            <div class="form-group">
-              <label for="description">Deskripsi</label>
-              <textarea id="description" name="description" required></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label for="photo">Foto</label>
-              <input type="file" id="photo" name="photo" accept="image/*" required>
-              <div class="camera-container">
-                <video id="cameraPreview" autoplay playsinline style="display:none;"></video>
-                <canvas id="photoCanvas" style="display:none;"></canvas>
-                <div class="camera-buttons">
-                  <button type="button" id="startCamera" class="btn">Buka Kamera</button>
-                  <button type="button" id="capturePhoto" class="btn" disabled>Ambil Foto</button>
-                  <button type="button" id="retakePhoto" class="btn" style="display:none;">Ambil Ulang</button>
-                </div>
-                <div id="photoPreview" class="photo-preview"></div>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="location">Lokasi (Opsional)</label>
-              <div id="mapContainer" class="map-container">
-                <div id="addStoryMap" class="add-story-map"></div>
-                <p id="selectedLocation">Klik pada peta untuk memilih lokasi</p>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary">Tambah Cerita</button>
-            </div>
-          </form>
-        </div>
+        ${createAddStoryFormTemplate()}
       </div>
     `;
   }
@@ -119,7 +85,7 @@ export default class AddPage {
       }, 'image/jpeg');
     });
     
-        retakePhotoButton.addEventListener('click', () => {
+    retakePhotoButton.addEventListener('click', () => {
       photoPreview.innerHTML = '';
       retakePhotoButton.style.display = 'none';
       startCameraButton.disabled = false;
