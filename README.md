@@ -1,4 +1,3 @@
-**File: d:\Dicoding\web Intermediate\Submission\Story-App\README.md**
 ```markdown
 # Story App
 
@@ -32,15 +31,7 @@ Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, memb
 
 ### Installation
 
-1. Clone repositori ini.
-   ```shell
-   git clone https://github.com/username/Story-App.git
-   ```
-2. Masuk ke direktori proyek.
-   ```shell
-   cd Story-App
-   ```
-3. Pasang seluruh dependencies dengan perintah berikut.
+1. Pasang seluruh dependencies dengan perintah berikut.
    ```shell
    npm install
    ```
@@ -76,15 +67,35 @@ Story-App/
 │   ├── scripts/            # Source JavaScript files
 │   │   ├── data/           # Data layer and API services
 │   │   │   └── api.js      # API service
+│   │   ├── mvp/            # Model-View-Presenter architecture
+│   │   │   ├── model/      # Data models
+│   │   │   │   ├── auth-model.js  # Authentication model
+│   │   │   │   └── story-model.js # Story data model
+│   │   │   ├── presenter/  # Presenters (controllers)
+│   │   │   │   ├── add-story-presenter.js
+│   │   │   │   ├── detail-presenter.js
+│   │   │   │   ├── home-presenter.js
+│   │   │   │   ├── login-presenter.js
+│   │   │   │   └── register-presenter.js
+│   │   │   └── view/       # Views
+│   │   │       ├── about-view.js
+│   │   │       ├── add-story-view.js
+│   │   │       ├── detail-view.js
+│   │   │       ├── home-view.js
+│   │   │       ├── login-view.js
+│   │   │       └── register-view.js
 │   │   ├── pages/          # Page components
 │   │   │   ├── about/      # About page
 │   │   │   │   └── about-page.js
 │   │   │   ├── add/        # Add story page
 │   │   │   │   └── add-page.js
 │   │   │   ├── auth/       # Authentication pages
+│   │   │   │   ├── login-page.js
+│   │   │   │   └── register-page.js
 │   │   │   ├── detail/     # Story detail page
 │   │   │   │   └── detail-page.js
 │   │   │   ├── home/       # Home page
+│   │   │   │   └── home-page.js
 │   │   │   └── app.js      # Main app component
 │   │   ├── routes/         # Routing configuration
 │   │   │   ├── routes.js   # Routes definition
@@ -114,6 +125,7 @@ Story-App/
 - **Web API**: Memanfaatkan Camera API, Geolocation API, dan View Transition API
 - **CSS3**: Styling modern dengan fitur responsif
 - **HTML5**: Markup semantik untuk aksesibilitas yang lebih baik
+- **MVP Architecture**: Pola Model-View-Presenter untuk pemisahan tanggung jawab
 
 ## Fitur Aksesibilitas
 

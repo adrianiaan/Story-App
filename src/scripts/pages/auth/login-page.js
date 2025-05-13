@@ -1,72 +1,24 @@
-import StoryApiService from '../../data/api';
-import AuthUtils from '../../utils/auth-utils';
-import { createLoginFormTemplate } from '../../templates/template-creator';
+import LoginView from '../../mvp/view/login-view';
+import AuthModel from '../../mvp/model/auth-model';
+import LoginPresenter from '../../mvp/presenter/login-presenter';
 
-export default class LoginPage {
+class LoginPage {
+  constructor() {
+    this._view = new LoginView();
+    this._authModel = new AuthModel();
+    this._presenter = new LoginPresenter({
+      view: this._view,
+      authModel: this._authModel,
+    });
+  }
+
   async render() {
-    return `
-      <div class="container">
-        ${createLoginFormTemplate()}
-      </div>
-    `;
+    return this._view.getTemplate();
   }
 
   async afterRender() {
-    // Redirect jika sudah login
-    if (AuthUtils.isLoggedIn()) {
-      window.location.href = '#/';
-      return;
-    }
-    
-    const loginForm = document.getElementById('loginForm');
-    
-    loginForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      
-      try {
-        const response = await StoryApiService.login({ email, password });
-        
-        if (!response.error) {
-          AuthUtils.setAuth(response.loginResult.token, {
-            id: response.loginResult.userId,
-            name: response.loginResult.name,
-          });
-          
-          alert('Login berhasil');
-          window.location.href = '#/';
-          
-          // Update tampilan menu
-          this._updateAuthMenu();
-        } else {
-          alert(`Login gagal: ${response.message}`);
-        }
-      } catch (error) {
-        alert('Terjadi kesalahan saat login');
-        console.error(error);
-      }
-    });
-  }
-  
-  _updateAuthMenu() {
-    const authMenu = document.getElementById('auth-menu');
-    
-    if (AuthUtils.isLoggedIn()) {
-      const { user } = AuthUtils.getAuth();
-      authMenu.innerHTML = `
-        <a href="#/" id="logout-button">Logout (${user.name})</a>
-      `;
-      
-      document.getElementById('logout-button').addEventListener('click', (event) => {
-        event.preventDefault();
-        AuthUtils.destroyAuth();
-        window.location.href = '#/login';
-        this._updateAuthMenu();
-      });
-    } else {
-      authMenu.innerHTML = '<a href="#/login">Masuk</a>';
-    }
+    await this._presenter.init();
   }
 }
+
+export default LoginPage;

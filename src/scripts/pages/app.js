@@ -7,13 +7,16 @@ class App {
     this.#content = content;
     this.#drawerButton = drawerButton;
     this.#navigationDrawer = navigationDrawer;
-
+    
+    this.#currentPage = null;
+    
     this._setupDrawer();
   }
 
   #content;
   #drawerButton;
   #navigationDrawer;
+  #currentPage = null;
 
   _setupDrawer() {
     this.#drawerButton.addEventListener('click', () => {
@@ -41,6 +44,11 @@ class App {
       const url = UrlParser.parseActiveUrlWithCombiner();
       const page = routes[url];
 
+      // Panggil beforeUnload pada halaman sebelumnya jika ada
+      if (this.#currentPage && typeof this.#currentPage.beforeUnload === 'function') {
+        await this.#currentPage.beforeUnload();
+      }
+
       if (!page) {
         this.#content.innerHTML = `
           <div class="container">
@@ -53,6 +61,9 @@ class App {
         `;
         return;
       }
+
+      // Simpan referensi ke halaman saat ini
+      this.#currentPage = page;
 
       // Implementasi View Transition API
       if (document.startViewTransition) {
