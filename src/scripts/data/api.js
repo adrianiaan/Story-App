@@ -40,8 +40,29 @@ class StoryApiService {
     return response.json();
   }
 
-  static async getAllStories(token) {
-    const response = await fetch(API_ENDPOINT.GET_ALL_STORIES, {
+  static async getAllStories(token, options = {}) {
+    let url = API_ENDPOINT.GET_ALL_STORIES;
+    
+    // Tambahkan parameter query jika ada
+    if (Object.keys(options).length > 0) {
+      const queryParams = new URLSearchParams();
+      
+      if (options.location) {
+        queryParams.append('location', '1');
+      }
+      
+      if (options.size) {
+        queryParams.append('size', options.size);
+      }
+      
+      if (options.page) {
+        queryParams.append('page', options.page);
+      }
+      
+      url = `${url}?${queryParams.toString()}`;
+    }
+    
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

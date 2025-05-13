@@ -4,6 +4,11 @@ import { initMapForAddStory } from '../../utils/map-initializer';
 import { createAddStoryFormTemplate } from '../../templates/template-creator';
 
 export default class AddPage {
+  constructor() {
+    this.stream = null;
+    this.photoBlob = null;
+  }
+
   async render() {
     return `
       <div class="content container">
@@ -33,17 +38,17 @@ export default class AddPage {
     const photoPreview = document.getElementById('photoPreview');
     const photoInput = document.getElementById('photo');
     
-    let stream = null;
-    let photoBlob = null;
+    // Pastikan stream kamera berhenti ketika pengguna berpindah halaman
+    this._setupCameraCleanup();
     
     startCameraButton.addEventListener('click', async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
+        this.stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment' },
           audio: false,
         });
         
-        cameraPreview.srcObject = stream;
+        cameraPreview.srcObject = this.stream;
         cameraPreview.style.display = 'block';
         startCameraButton.disabled = true;
         capturePhotoButton.disabled = false;
@@ -60,16 +65,13 @@ export default class AddPage {
       context.drawImage(cameraPreview, 0, 0, photoCanvas.width, photoCanvas.height);
       
       photoCanvas.toBlob((blob) => {
-        photoBlob = blob;
+        this.photoBlob = blob;
         
         const photoURL = URL.createObjectURL(blob);
         photoPreview.innerHTML = `<img src="${photoURL}" alt="Preview foto">`;
         
         // Stop camera stream
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
-          stream = null;
-        }
+        this._stopCameraStream();
         
         cameraPreview.style.display = 'none';
         capturePhotoButton.disabled = true;
@@ -90,7 +92,7 @@ export default class AddPage {
       retakePhotoButton.style.display = 'none';
       startCameraButton.disabled = false;
       photoInput.value = '';
-      photoBlob = null;
+      this.photoBlob = null;
     });
     
     // Handle file input change
@@ -109,7 +111,7 @@ export default class AddPage {
       event.preventDefault();
       
       const description = document.getElementById('description').value;
-      const photoFile = photoInput.files[0] || photoBlob;
+      const photoFile = photoInput.files[0] || this.photoBlob;
       const position = marker.getLatLng();
       
       if (!description || !photoFile) {
@@ -141,5 +143,39 @@ export default class AddPage {
         console.error(error);
       }
     });
+  }
+
+  // Metode untuk menghentikan stream kamera
+  _stopCameraStream() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+  }
+
+  // Metode untuk memastikan stream kamera berhenti ketika pengguna berpindah halaman
+  _setupCameraCleanup() {
+    // Tambahkan event listener untuk hashchange
+    const hashChangeHandler = () => {
+      this._stopCameraStream();
+    };
+    
+    window.addEventListener('hashchange', hashChangeHandler);
+    
+    // Tambahkan event listener untuk beforeunload
+    const beforeUnloadHandler = () => {
+      this._stopCameraStream();
+    };
+    
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+    
+    // Tambahkan event listener untuk visibilitychange
+    const visibilityChangeHandler = () => {
+      if (document.hidden) {
+        this._stopCameraStream();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', visibilityChangeHandler);
   }
 }
