@@ -1,4 +1,4 @@
-import { createLoginFormTemplate } from '../../templates/template-creator';
+import { createLoginFormTemplate } from "../../templates/template-creator";
 
 class LoginView {
   constructor() {
@@ -7,6 +7,9 @@ class LoginView {
     this._passwordInput = null;
   }
 
+  goToHomePage() {
+    window.location.hash = "#/";
+  }
   getTemplate() {
     return `
       <div class="container">
@@ -16,18 +19,18 @@ class LoginView {
   }
 
   initElements() {
-    this._loginForm = document.getElementById('loginForm');
-    this._emailInput = document.getElementById('email');
-    this._passwordInput = document.getElementById('password');
+    this._loginForm = document.getElementById("loginForm");
+    this._emailInput = document.getElementById("email");
+    this._passwordInput = document.getElementById("password");
   }
 
   setupLoginForm(loginCallback) {
-    this._loginForm.addEventListener('submit', (event) => {
+    this._loginForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      
+
       const email = this._emailInput.value;
       const password = this._passwordInput.value;
-      
+
       loginCallback({ email, password });
     });
   }

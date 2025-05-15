@@ -7,10 +7,10 @@ class LoginPresenter {
   async init() {
     // Redirect jika sudah login
     if (this._authModel.isLoggedIn()) {
-      window.location.href = '#/';
+      this._view.goToHomePage();
       return;
     }
-    
+
     this._view.initElements();
     this._view.setupLoginForm(async (credentials) => {
       await this._login(credentials);
@@ -20,15 +20,15 @@ class LoginPresenter {
   async _login(credentials) {
     try {
       const result = await this._authModel.login(credentials);
-      
+
       if (!result.error) {
-        this._view.showSuccessMessage('Login berhasil');
-        window.location.href = '#/';
+        this._view.showSuccessMessage("Login berhasil");
+        this._view.goToHomePage();
       } else {
         this._view.showErrorMessage(`Login gagal: ${result.message}`);
       }
     } catch (error) {
-      this._view.showErrorMessage('Terjadi kesalahan saat login');
+      this._view.showErrorMessage("Terjadi kesalahan saat login");
       console.error(error);
     }
   }

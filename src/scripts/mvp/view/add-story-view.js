@@ -20,6 +20,13 @@ class AddStoryView {
     this._photoPreview = null;
   }
 
+  redirectToLogin() {
+    window.location.hash = '#/login';
+  }
+  goToHomePage() {
+    window.location.hash = '#/';
+  }
+
   getTemplate() {
     return `
       <div class="content container">
