@@ -20,6 +20,16 @@ const handleNavigation = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const mainContent = document.querySelector("#main-content");
+  const skipLink = document.querySelector(".skip-link");
+  
+  skipLink.addEventListener("click", function (event) {
+    event.preventDefault(); 
+    skipLink.blur(); 
+    mainContent.focus(); 
+    mainContent.scrollIntoView(); 
+  });
+
   const app = new App({
     content: document.querySelector('#main-content'),
     drawerButton: document.querySelector('#drawer-button'),

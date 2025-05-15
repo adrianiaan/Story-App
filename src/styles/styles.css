@@ -29,6 +29,10 @@ body {
   top: 80px;
 }
 
+.main-content:focus {
+  outline: none;
+}
+
 /* Container */
 .container {
   padding-inline: 32px;
