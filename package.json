@@ -33,6 +33,7 @@
     "webpack-merge": "^5.9.0"
   },
   "dependencies": {
-    "regenerator-runtime": "^0.13.11"
+    "regenerator-runtime": "^0.13.11",
+    "workbox-window": "^7.3.0"
   }
 }

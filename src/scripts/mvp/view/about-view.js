@@ -1,4 +1,11 @@
+import NotificationHelper from '../../utils/notification-helper';
+import AuthModel from '../model/auth-model';
+
 class AboutView {
+  constructor() {
+    this._authModel = new AuthModel();
+  }
+
   getTemplate() {
     return `
       <div class="container">
@@ -62,9 +69,97 @@ class AboutView {
               </div>
             </div>
           </div>
+          
+          <!-- Tambahkan bagian untuk notifikasi -->
+          <div class="about-section notification-section">
+            <h3><i class="fas fa-bell"></i> Notifikasi</h3>
+            <p>Dapatkan pemberitahuan tentang cerita baru yang dibagikan.</p>
+            
+            <div class="notification-controls">
+              <button id="notificationBtn" class="btn btn-primary">
+                <i class="fas fa-bell"></i> <span id="notificationBtnText">Aktifkan Notifikasi</span>
+              </button>
+              <p id="notificationStatus" class="notification-status"></p>
+            </div>
+          </div>
         </div>
       </div>
     `;
+  }
+
+  async afterRender() {
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationBtnText = document.getElementById('notificationBtnText');
+    const notificationStatus = document.getElementById('notificationStatus');
+    
+    // Cek apakah user sudah login
+    const auth = this._authModel.getAuth();
+    
+    if (!auth || !auth.token) {
+      notificationBtn.disabled = true;
+      notificationStatus.textContent = 'Anda harus login untuk mengaktifkan notifikasi';
+      notificationStatus.classList.add('notification-warning');
+      return;
+    }
+    
+    // Cek apakah browser mendukung notifikasi
+    if (!('Notification' in window)) {
+      notificationBtn.disabled = true;
+      notificationStatus.textContent = 'Browser Anda tidak mendukung notifikasi';
+      notificationStatus.classList.add('notification-error');
+      return;
+    }
+    
+    // Cek status langganan notifikasi
+    const isSubscribed = await NotificationHelper.isPushNotificationSubscribed();
+    this._updateNotificationUI(isSubscribed, notificationBtnText, notificationStatus);
+    
+    // Tambahkan event listener untuk tombol notifikasi
+    notificationBtn.addEventListener('click', async () => {
+      try {
+        notificationBtn.disabled = true;
+        
+        const isCurrentlySubscribed = await NotificationHelper.isPushNotificationSubscribed();
+        
+        if (isCurrentlySubscribed) {
+          // Unsubscribe dari notifikasi
+          await NotificationHelper.unsubscribePushNotif(auth.token);
+          this._updateNotificationUI(false, notificationBtnText, notificationStatus);
+          notificationStatus.textContent = 'Notifikasi dinonaktifkan';
+        } else {
+          // Subscribe ke notifikasi
+          const subscription = await NotificationHelper.subscribePushNotif(auth.token);
+          
+          if (subscription) {
+            this._updateNotificationUI(true, notificationBtnText, notificationStatus);
+            notificationStatus.textContent = 'Notifikasi diaktifkan';
+          } else {
+            notificationStatus.textContent = 'Gagal mengaktifkan notifikasi';
+            notificationStatus.classList.add('notification-error');
+          }
+        }
+      } catch (error) {
+        console.error('Error toggling notification:', error);
+        notificationStatus.textContent = 'Terjadi kesalahan saat mengubah status notifikasi';
+        notificationStatus.classList.add('notification-error');
+      } finally {
+        notificationBtn.disabled = false;
+      }
+    });
+  }
+  
+  _updateNotificationUI(isSubscribed, buttonText, statusElement) {
+    if (isSubscribed) {
+      buttonText.textContent = 'Nonaktifkan Notifikasi';
+      statusElement.textContent = 'Notifikasi aktif';
+      statusElement.classList.add('notification-active');
+      statusElement.classList.remove('notification-inactive', 'notification-error', 'notification-warning');
+    } else {
+      buttonText.textContent = 'Aktifkan Notifikasi';
+      statusElement.textContent = 'Notifikasi tidak aktif';
+      statusElement.classList.add('notification-inactive');
+      statusElement.classList.remove('notification-active', 'notification-error', 'notification-warning');
+    }
   }
 }
 

@@ -6,6 +6,8 @@ const API_ENDPOINT = {
   GET_ALL_STORIES: `${CONFIG.BASE_URL}/stories`,
   GET_DETAIL_STORY: (id) => `${CONFIG.BASE_URL}/stories/${id}`,
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
+  PUSH_SUBSCRIBE: `${CONFIG.BASE_URL}/push-subscription/subscribe`,
+  PUSH_UNSUBSCRIBE: `${CONFIG.BASE_URL}/push-subscription/unsubscribe`,
 };
 
 class StoryApiService {
@@ -88,6 +90,33 @@ class StoryApiService {
         Authorization: `Bearer ${token}`,
       },
       body: formData,
+    });
+    
+    return response.json();
+  }
+  // method untuk subscribe push notification
+  static async subscribePushNotification(subscription, token) {
+    const response = await fetch(API_ENDPOINT.PUSH_SUBSCRIBE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(subscription),
+    });
+    
+    return response.json();
+  }
+  
+  // method untuk unsubscribe push notification
+  static async unsubscribePushNotification(subscription, token) {
+    const response = await fetch(API_ENDPOINT.PUSH_UNSUBSCRIBE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(subscription),
     });
     
     return response.json();
