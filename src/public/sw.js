@@ -118,33 +118,29 @@ self.addEventListener('push', (event) => {
   console.log('Service Worker: Pushed');
 
   let notificationData = {
-  title: 'Notifikasi Baru',
-  options: {
-    body: 'Ada cerita baru yang dibagikan!',
-    icon: '/favicon.png', // Ubah dari /icons/icon-192x192.png
-    vibrate: [100, 50, 100],
-    badge: '/favicon.png', // Ubah dari /icons/icon-72x72.png
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1,
-      url: '/',
+    title: 'Story App',
+    options: {
+      body: 'Ada pembaruan baru di Story App',
+      icon: './icons/android/android-launchericon-192-192.png',
+      badge: './icons/android/android-launchericon-96-96.png',
+      vibrate: [100, 50, 100],
+      data: {
+        url: '/',
+      },
     },
-  },
-}
+  };
 
   if (event.data) {
     try {
       const dataJson = event.data.json();
+      console.log('Received push data:', dataJson);
+      
+      // Format sesuai dengan dokumentasi API
       notificationData = {
         title: dataJson.title || notificationData.title,
         options: {
           ...notificationData.options,
-          body: dataJson.body || notificationData.options.body,
-          image: dataJson.image || null,
-          data: {
-            ...notificationData.options.data,
-            url: dataJson.url || notificationData.options.data.url,
-          },
+          ...dataJson.options,
         },
       };
     } catch (error) {
@@ -152,6 +148,7 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  console.log('Showing notification:', notificationData);
   event.waitUntil(
     self.registration.showNotification(notificationData.title, notificationData.options)
   );

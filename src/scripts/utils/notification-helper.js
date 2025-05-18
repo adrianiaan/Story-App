@@ -28,7 +28,6 @@ const NotificationHelper = {
   async subscribePushNotif(token) {
     try {
       console.log('Memulai proses berlangganan push notification...');
-      console.log('Token yang digunakan:', token);
       
       const permissionGranted = await this.requestPermission();
       if (!permissionGranted) {
@@ -43,7 +42,6 @@ const NotificationHelper = {
 
       console.log('Menunggu service worker siap...');
       const registration = await navigator.serviceWorker.ready;
-      console.log('Service Worker siap:', registration);
       
       let subscription = await registration.pushManager.getSubscription();
       console.log('Subscription yang ada:', subscription);
@@ -53,15 +51,8 @@ const NotificationHelper = {
         return subscription;
       }
 
-      // Pastikan VAPID key tersedia
-      if (!CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY) {
-        console.error('VAPID public key tidak tersedia di CONFIG');
-        console.log('CONFIG:', CONFIG);
-        return null;
-      }
-
-      console.log('VAPID public key:', CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY);
-      const convertedVapidKey = this._urlBase64ToUint8Array(CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY);
+      const vapidPublicKey = CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY;
+      const convertedVapidKey = this._urlBase64ToUint8Array(vapidPublicKey);
       
       console.log('Mencoba berlangganan push notification...');
       try {
@@ -77,22 +68,16 @@ const NotificationHelper = {
 
       // Sesuaikan format subscription sebelum dikirim ke server
       const subscriptionJson = subscription.toJSON();
-      console.log('Mengirim subscription ke server dengan format:', {
+      const subscriptionData = {
         endpoint: subscriptionJson.endpoint,
         keys: {
           p256dh: subscriptionJson.keys.p256dh,
           auth: subscriptionJson.keys.auth,
         }
-      });
+      };
       
       try {
-        await StoryApiService.subscribePushNotification({
-          endpoint: subscriptionJson.endpoint,
-          keys: {
-            p256dh: subscriptionJson.keys.p256dh,
-            auth: subscriptionJson.keys.auth,
-          }
-        }, token);
+        await StoryApiService.subscribePushNotification(subscriptionData, token);
         console.log('Subscription berhasil dikirim ke server');
       } catch (apiError) {
         console.error('Gagal mengirim subscription ke server:', apiError);
@@ -109,7 +94,6 @@ const NotificationHelper = {
   async unsubscribePushNotif(token) {
     try {
       console.log('Memulai proses berhenti berlangganan push notification...');
-      console.log('Token yang digunakan:', token);
       
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
@@ -121,12 +105,12 @@ const NotificationHelper = {
 
       // Sesuaikan format unsubscribe sesuai dengan API
       const subscriptionJson = subscription.toJSON();
-      console.log('Mengirim permintaan unsubscribe ke server dengan endpoint:', subscriptionJson.endpoint);
+      const unsubscribeData = {
+        endpoint: subscriptionJson.endpoint,
+      };
       
       try {
-        await StoryApiService.unsubscribePushNotification({
-          endpoint: subscriptionJson.endpoint,
-        }, token);
+        await StoryApiService.unsubscribePushNotification(unsubscribeData, token);
         console.log('Permintaan unsubscribe berhasil dikirim ke server');
       } catch (apiError) {
         console.error('Gagal mengirim permintaan unsubscribe ke server:', apiError);
@@ -138,7 +122,7 @@ const NotificationHelper = {
       console.log('Berhasil berhenti berlangganan push notification');
     } catch (error) {
       console.error('Gagal berhenti berlangganan push notification:', error);
-      throw error; // Re-throw error untuk ditangkap di about-view.js
+      throw error;
     }
   },
   
