@@ -1,30 +1,37 @@
 // Definisikan CACHE_NAME langsung
 const CACHE_NAME = 'StoryApp-V1';
 
-// Cek apakah ini mode development (berdasarkan hostname)
-const isDevelopment = self.location.hostname === 'localhost' || 
-                      self.location.hostname === '127.0.0.1';
-
+const isDevelopment = typeof IS_DEVELOPMENT !== 'undefined' ? IS_DEVELOPMENT : false;
 
 const assetsToCache = [
-  './',
-  './icons/icon-72x72.png',
-  './icons/icon-96x96.png',
-  './icons/icon-128x128.png',
-  './icons/icon-144x144.png',
-  './icons/icon-152x152.png',
-  './icons/icon-192x192.png',
-  './icons/icon-384x384.png',
-  './icons/icon-512x512.png',
+ './',
+  './icons/android/android-launchericon-48-48.png',
+  './icons/android/android-launchericon-72-72.png',
+  './icons/android/android-launchericon-96-96.png',
+  './icons/android/android-launchericon-144-144.png',
+  './icons/android/android-launchericon-192-192.png',
+  './icons/android/android-launchericon-512-512.png',
   './index.html',
   './favicon.png',
   './app.bundle.js',
-  './manifest.json', // Tambahkan ini
+  './manifest.json',
 ];
                       
 // Event install service worker
 self.addEventListener('install', (event) => {
   console.log('Installing Service Worker...');
+  
+  // Tambahkan precaching di sini
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Caching app shell and content');
+        return cache.addAll(assetsToCache);
+      })
+      .catch((error) => {
+        console.error('Precaching failed:', error);
+      })
+  );
   
   // Skip waiting agar service worker langsung aktif
   self.skipWaiting();
@@ -111,19 +118,19 @@ self.addEventListener('push', (event) => {
   console.log('Service Worker: Pushed');
 
   let notificationData = {
-    title: 'Notifikasi Baru',
-    options: {
-      body: 'Ada cerita baru yang dibagikan!',
-      icon: '/icons/icon-192x192.png',
-      vibrate: [100, 50, 100],
-      badge: '/icons/icon-72x72.png',
-      data: {
-        dateOfArrival: Date.now(),
-        primaryKey: 1,
-        url: '/',
-      },
+  title: 'Notifikasi Baru',
+  options: {
+    body: 'Ada cerita baru yang dibagikan!',
+    icon: '/favicon.png', // Ubah dari /icons/icon-192x192.png
+    vibrate: [100, 50, 100],
+    badge: '/favicon.png', // Ubah dari /icons/icon-72x72.png
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1,
+      url: '/',
     },
-  };
+  },
+}
 
   if (event.data) {
     try {

@@ -6,7 +6,7 @@ import swRegister from './utils/sw-register';
 import NetworkStatus from './utils/network-status';
 
 // Cek apakah browser mendukung View Transitions API
-const supportsViewTransitions = 'startViewTransition' in document;
+const supportsViewTransitions = document.startViewTransition !== undefined;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const app = new App({

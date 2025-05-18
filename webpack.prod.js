@@ -3,6 +3,9 @@ const common = require('./webpack.common');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -56,6 +59,24 @@ module.exports = merge(common, {
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css',
+    }),
+    // Tambahkan plugin untuk menandai mode production
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      'IS_DEVELOPMENT': JSON.stringify(false),
+    }),
+    // Tambahkan CopyWebpackPlugin untuk menyalin aset statis
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src/public/favicon.png'),
+          to: path.resolve(__dirname, 'dist'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/public/manifest.json'),
+          to: path.resolve(__dirname, 'dist'),
+        },
+      ],
     }),
   ],
 });
