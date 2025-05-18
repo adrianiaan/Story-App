@@ -1,6 +1,24 @@
 import { Workbox } from 'workbox-window';
 
 const swRegister = async () => {
+  // Cek apakah ini mode development
+  const isDevelopment = process.env.NODE_ENV === 'development' || typeof IS_DEVELOPMENT !== 'undefined';
+  
+  if (isDevelopment) {
+    console.log('Service Worker dinonaktifkan dalam mode development');
+    
+    // Unregister service worker yang mungkin sudah terdaftar sebelumnya
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+        console.log('Service worker berhasil dihapus');
+      }
+    }
+    
+    return;
+  }
+
   if (!('serviceWorker' in navigator)) {
     console.log('Service Worker tidak didukung di browser ini');
     return;
@@ -9,36 +27,30 @@ const swRegister = async () => {
   try {
     const wb = new Workbox('/sw.js');
     
-    // Tambahkan event listener untuk menangani update
     wb.addEventListener('installed', (event) => {
-      console.log('Service worker installed for the first time!');
       if (!event.isUpdate) {
         console.log('Service Worker berhasil diinstal');
       }
     });
 
-    wb.addEventListener('waiting', (event) => {
-      console.log(
-        'New service worker is waiting to activate. ',
-        'When you close all tabs of this web, the new service worker will be activated',
-      );
-    });
-
-    wb.addEventListener('activated', (event) => {
-      if (!event.isUpdate) {
-        console.log('Service Worker aktif! Halaman akan bekerja secara offline.');
-      }
+    wb.addEventListener('activated', () => {
+      console.log('Service Worker berhasil diaktifkan');
     });
 
     wb.addEventListener('controlling', () => {
-      console.log('Service Worker mengontrol halaman');
+      console.log('Service Worker sekarang mengontrol halaman');
     });
 
-    wb.addEventListener('message', (event) => {
-      console.log(`Pesan dari Service Worker: ${event.data}`);
+    wb.addEventListener('waiting', (event) => {
+      console.log('Service Worker baru menunggu untuk mengambil alih');
+      
+      // Tampilkan notifikasi pembaruan jika diperlukan
+      if (confirm('Pembaruan tersedia! Muat ulang untuk memperbarui aplikasi?')) {
+        wb.messageSkipWaiting();
+        window.location.reload();
+      }
     });
 
-    // Register the service worker
     await wb.register();
     console.log('Service worker registered');
   } catch (error) {

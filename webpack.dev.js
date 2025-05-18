@@ -1,6 +1,7 @@
 const { merge } = require('webpack-merge');
 const path = require('path');
 const common = require('./webpack.common');
+const webpack = require('webpack');
 
 module.exports = merge(common, {
   mode: 'development',
@@ -16,6 +17,10 @@ module.exports = merge(common, {
       },
     },
     compress: true,
+    // Tambahkan konfigurasi untuk service worker
+    devMiddleware: {
+      writeToDisk: true, // Ini memastikan file ditulis ke disk, penting untuk service worker
+    },
   },
   module: {
     rules: [
@@ -32,4 +37,11 @@ module.exports = merge(common, {
       },
     ],
   },
+  // Tambahkan plugin untuk menandai mode development
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      'IS_DEVELOPMENT': JSON.stringify(true),
+    }),
+  ],
 });
