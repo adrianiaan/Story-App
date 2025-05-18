@@ -71,7 +71,7 @@ header {
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   transition: right 0.3s ease;
-  z-index: 1000;
+  z-index: 999;
 }
 
 .navigation-drawer.open {
@@ -665,6 +665,53 @@ header {
   color: #842029;
 }
 
+/* Toast Notification */
+.toast-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Perbaikan untuk Connection Status */
+.connection-status {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  text-align: center;
+  z-index: 1000;
+  font-weight: bold;
+  transition: opacity 0.3s;
+}
+
+.connection-status.online {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.connection-status.offline {
+  background-color: #f44336;
+  color: white;
+}
+
+.connection-status.hidden {
+  opacity: 0;
+}
 
 /* Footer */
 footer {

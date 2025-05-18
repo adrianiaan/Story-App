@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Story App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      color: #333;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 600px;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #e74c3c;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      color: #e74c3c;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: #2980b9;
+    }
+    
+    .tips {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f9f9f9;
+      border-left: 4px solid #3498db;
+      text-align: left;
+    }
+    
+    .tips h3 {
+      margin-top: 0;
+    }
+    
+    .tips ul {
+      padding-left: 1.5rem;
+    }
+    
+    .tips li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📶</div>
+    <h1>Anda Sedang Offline</h1>
+    <p>Sepertinya Anda tidak terhubung ke internet saat ini. Beberapa fitur mungkin tidak tersedia dalam mode offline.</p>
+    
+    <a href="/" class="btn">Coba Lagi</a>
+    
+    <div class="tips">
+      <h3>Tips saat offline:</h3>
+      <ul>
+        <li>Anda masih dapat melihat cerita yang telah dimuat sebelumnya</li>
+        <li>Anda dapat membuat cerita baru yang akan disimpan secara lokal</li>
+        <li>Cerita yang dibuat saat offline akan otomatis diunggah ketika Anda kembali online</li>
+        <li>Periksa koneksi internet Anda dan coba lagi nanti</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
