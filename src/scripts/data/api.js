@@ -6,8 +6,8 @@ const API_ENDPOINT = {
   GET_ALL_STORIES: `${CONFIG.BASE_URL}/stories`,
   GET_DETAIL_STORY: (id) => `${CONFIG.BASE_URL}/stories/${id}`,
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
-  PUSH_SUBSCRIBE: `${CONFIG.BASE_URL}/push-subscription/subscribe`,
-  PUSH_UNSUBSCRIBE: `${CONFIG.BASE_URL}/push-subscription/unsubscribe`,
+  PUSH_SUBSCRIBE: `${CONFIG.BASE_URL}/notifications/subscribe`,
+  PUSH_UNSUBSCRIBE: `${CONFIG.BASE_URL}/notifications/subscribe`,
 };
 
 class StoryApiService {
@@ -111,7 +111,7 @@ class StoryApiService {
   // method untuk unsubscribe push notification
   static async unsubscribePushNotification(subscription, token) {
     const response = await fetch(API_ENDPOINT.PUSH_UNSUBSCRIBE, {
-      method: 'POST',
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

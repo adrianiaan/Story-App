@@ -1,12 +1,15 @@
 import { Workbox } from 'workbox-window';
 
 const swRegister = async () => {
+  // Ubah ini menjadi false untuk mengaktifkan Service Worker dalam mode development
+  const disableInDevelopment = false;
+  
   // Cek apakah ini mode development
   // IS_DEVELOPMENT akan didefinisikan oleh webpack.DefinePlugin
   const isDevelopment = typeof IS_DEVELOPMENT !== 'undefined' ? IS_DEVELOPMENT : 
                         process.env.NODE_ENV === 'development';
   
-  if (isDevelopment) {
+  if (isDevelopment && disableInDevelopment) {
     console.log('Service Worker dinonaktifkan dalam mode development');
     
     // Unregister service worker yang mungkin sudah terdaftar sebelumnya

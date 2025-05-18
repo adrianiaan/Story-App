@@ -1,7 +1,7 @@
 // Definisikan CACHE_NAME langsung
 const CACHE_NAME = 'StoryApp-V1';
 
-const isDevelopment = typeof IS_DEVELOPMENT !== 'undefined' ? IS_DEVELOPMENT : false;
+const isDevelopment = false;
 
 const assetsToCache = [
  './',

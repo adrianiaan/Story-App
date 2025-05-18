@@ -1,9 +1,12 @@
 import NotificationHelper from '../../utils/notification-helper';
-import AuthModel from '../model/auth-model';
 
 class AboutView {
   constructor() {
-    this._authModel = new AuthModel();
+    this._presenter = null;
+  }
+  
+  setPresenter(presenter) {
+    this._presenter = presenter;
   }
 
   getTemplate() {
@@ -89,12 +92,36 @@ class AboutView {
 
   async afterRender() {
     const notificationBtn = document.getElementById('notificationBtn');
+    
+    // Tambahkan event listener untuk tombol notifikasi
+    notificationBtn.addEventListener('click', async () => {
+      try {
+        notificationBtn.disabled = true;
+        
+        const result = await this._presenter.toggleNotification();
+        
+        const notificationBtnText = document.getElementById('notificationBtnText');
+        const notificationStatus = document.getElementById('notificationStatus');
+        
+        if (result.success) {
+          this._updateNotificationUI(result.subscribed, notificationBtnText, notificationStatus);
+          notificationStatus.textContent = result.message;
+        } else {
+          notificationStatus.textContent = result.message;
+          notificationStatus.classList.add('notification-error');
+        }
+      } finally {
+        notificationBtn.disabled = false;
+      }
+    });
+  }
+  
+  async updateNotificationStatus(auth) {
+    const notificationBtn = document.getElementById('notificationBtn');
     const notificationBtnText = document.getElementById('notificationBtnText');
     const notificationStatus = document.getElementById('notificationStatus');
     
     // Cek apakah user sudah login
-    const auth = this._authModel.getAuth();
-    
     if (!auth || !auth.token) {
       notificationBtn.disabled = true;
       notificationStatus.textContent = 'Anda harus login untuk mengaktifkan notifikasi';
@@ -111,41 +138,20 @@ class AboutView {
     }
     
     // Cek status langganan notifikasi
-    const isSubscribed = await NotificationHelper.isPushNotificationSubscribed();
+    const isSubscribed = await this.isNotificationSubscribed();
     this._updateNotificationUI(isSubscribed, notificationBtnText, notificationStatus);
-    
-    // Tambahkan event listener untuk tombol notifikasi
-    notificationBtn.addEventListener('click', async () => {
-      try {
-        notificationBtn.disabled = true;
-        
-        const isCurrentlySubscribed = await NotificationHelper.isPushNotificationSubscribed();
-        
-        if (isCurrentlySubscribed) {
-          // Unsubscribe dari notifikasi
-          await NotificationHelper.unsubscribePushNotif(auth.token);
-          this._updateNotificationUI(false, notificationBtnText, notificationStatus);
-          notificationStatus.textContent = 'Notifikasi dinonaktifkan';
-        } else {
-          // Subscribe ke notifikasi
-          const subscription = await NotificationHelper.subscribePushNotif(auth.token);
-          
-          if (subscription) {
-            this._updateNotificationUI(true, notificationBtnText, notificationStatus);
-            notificationStatus.textContent = 'Notifikasi diaktifkan';
-          } else {
-            notificationStatus.textContent = 'Gagal mengaktifkan notifikasi';
-            notificationStatus.classList.add('notification-error');
-          }
-        }
-      } catch (error) {
-        console.error('Error toggling notification:', error);
-        notificationStatus.textContent = 'Terjadi kesalahan saat mengubah status notifikasi';
-        notificationStatus.classList.add('notification-error');
-      } finally {
-        notificationBtn.disabled = false;
-      }
-    });
+  }
+  
+  async isNotificationSubscribed() {
+    return NotificationHelper.isPushNotificationSubscribed();
+  }
+  
+  async subscribeNotification(token) {
+    return NotificationHelper.subscribePushNotif(token);
+  }
+  
+  async unsubscribeNotification(token) {
+    return NotificationHelper.unsubscribePushNotif(token);
   }
   
   _updateNotificationUI(isSubscribed, buttonText, statusElement) {

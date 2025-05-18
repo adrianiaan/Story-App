@@ -8,7 +8,9 @@ const NotificationHelper = {
       return false;
     }
     
+    console.log('Meminta izin notifikasi...');
     const result = await Notification.requestPermission();
+    console.log('Hasil permintaan izin:', result);
     
     if (result === 'denied') {
       console.warn('Izin notifikasi ditolak');
@@ -23,38 +25,79 @@ const NotificationHelper = {
     return true;
   },
   
-   async subscribePushNotif(token) {
+  async subscribePushNotif(token) {
     try {
+      console.log('Memulai proses berlangganan push notification...');
+      console.log('Token yang digunakan:', token);
+      
       const permissionGranted = await this.requestPermission();
-      if (!permissionGranted) return null;
+      if (!permissionGranted) {
+        console.log('Izin notifikasi tidak diberikan');
+        return null;
+      }
 
       if (!('serviceWorker' in navigator)) {
         console.error('Service Worker tidak didukung di browser ini');
         return null;
       }
 
+      console.log('Menunggu service worker siap...');
       const registration = await navigator.serviceWorker.ready;
+      console.log('Service Worker siap:', registration);
+      
       let subscription = await registration.pushManager.getSubscription();
+      console.log('Subscription yang ada:', subscription);
 
-      if (subscription) return subscription;
+      if (subscription) {
+        console.log('Sudah berlangganan, mengembalikan subscription yang ada');
+        return subscription;
+      }
 
-      const vapidPublicKey = CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY;
-      const convertedVapidKey = this._urlBase64ToUint8Array(vapidPublicKey);
+      // Pastikan VAPID key tersedia
+      if (!CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY) {
+        console.error('VAPID public key tidak tersedia di CONFIG');
+        console.log('CONFIG:', CONFIG);
+        return null;
+      }
 
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedVapidKey,
-      });
+      console.log('VAPID public key:', CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY);
+      const convertedVapidKey = this._urlBase64ToUint8Array(CONFIG.PUSH_MSG_VAPID_PUBLIC_KEY);
+      
+      console.log('Mencoba berlangganan push notification...');
+      try {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: convertedVapidKey,
+        });
+        console.log('Subscription berhasil dibuat:', subscription);
+      } catch (subscribeError) {
+        console.error('Gagal membuat subscription:', subscribeError);
+        return null;
+      }
 
       // Sesuaikan format subscription sebelum dikirim ke server
       const subscriptionJson = subscription.toJSON();
-      await StoryApiService.subscribePushNotification({
+      console.log('Mengirim subscription ke server dengan format:', {
         endpoint: subscriptionJson.endpoint,
         keys: {
           p256dh: subscriptionJson.keys.p256dh,
           auth: subscriptionJson.keys.auth,
         }
-      }, token);
+      });
+      
+      try {
+        await StoryApiService.subscribePushNotification({
+          endpoint: subscriptionJson.endpoint,
+          keys: {
+            p256dh: subscriptionJson.keys.p256dh,
+            auth: subscriptionJson.keys.auth,
+          }
+        }, token);
+        console.log('Subscription berhasil dikirim ke server');
+      } catch (apiError) {
+        console.error('Gagal mengirim subscription ke server:', apiError);
+        // Tetap kembalikan subscription meskipun gagal mengirim ke server
+      }
 
       return subscription;
     } catch (error) {
@@ -65,33 +108,52 @@ const NotificationHelper = {
 
   async unsubscribePushNotif(token) {
     try {
+      console.log('Memulai proses berhenti berlangganan push notification...');
+      console.log('Token yang digunakan:', token);
+      
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
 
-      if (!subscription) return;
+      if (!subscription) {
+        console.log('Tidak ada subscription yang aktif');
+        return;
+      }
 
       // Sesuaikan format unsubscribe sesuai dengan API
       const subscriptionJson = subscription.toJSON();
-      await StoryApiService.unsubscribePushNotification({
-        endpoint: subscriptionJson.endpoint,
-      }, token);
+      console.log('Mengirim permintaan unsubscribe ke server dengan endpoint:', subscriptionJson.endpoint);
+      
+      try {
+        await StoryApiService.unsubscribePushNotification({
+          endpoint: subscriptionJson.endpoint,
+        }, token);
+        console.log('Permintaan unsubscribe berhasil dikirim ke server');
+      } catch (apiError) {
+        console.error('Gagal mengirim permintaan unsubscribe ke server:', apiError);
+        // Tetap lanjutkan unsubscribe di browser meskipun gagal di server
+      }
 
+      console.log('Menghapus subscription di browser...');
       await subscription.unsubscribe();
       console.log('Berhasil berhenti berlangganan push notification');
     } catch (error) {
       console.error('Gagal berhenti berlangganan push notification:', error);
+      throw error; // Re-throw error untuk ditangkap di about-view.js
     }
   },
   
   async isPushNotificationSubscribed() {
     try {
       if (!('serviceWorker' in navigator)) {
+        console.log('Service Worker tidak didukung di browser ini');
         return false;
       }
       
+      console.log('Memeriksa status langganan push notification...');
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
       
+      console.log('Status langganan:', !!subscription);
       return !!subscription;
     } catch (error) {
       console.error('Gagal memeriksa status langganan push notification:', error);
@@ -100,19 +162,29 @@ const NotificationHelper = {
   },
   
   _urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    
-    for (let i = 0; i < rawData.length; i++) {
-      outputArray[i] = rawData.charCodeAt(i);
+    if (!base64String) {
+      console.error('base64String tidak boleh kosong');
+      return new Uint8Array();
     }
     
-    return outputArray;
+    try {
+      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      
+      for (let i = 0; i < rawData.length; i++) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      
+      return outputArray;
+    } catch (error) {
+      console.error('Gagal mengkonversi base64 ke Uint8Array:', error);
+      return new Uint8Array();
+    }
   },
 };
 
