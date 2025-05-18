@@ -43,6 +43,19 @@ class AboutView {
             </div>
           </div>
           
+          <!-- Tambahkan bagian untuk notifikasi -->
+          <div class="about-section notification-section">
+            <h3><i class="fas fa-bell"></i> Notifikasi</h3>
+            <p>Dapatkan pemberitahuan tentang cerita baru yang dibagikan.</p>
+            
+            <div class="notification-controls">
+              <button id="notificationBtn" class="btn btn-primary">
+                <i class="fas fa-bell"></i> <span id="notificationBtnText">Aktifkan Notifikasi</span>
+              </button>
+              <p id="notificationStatus" class="notification-status"></p>
+            </div>
+          </div>
+
           <div class="about-section">
             <h3><i class="fas fa-code"></i> Teknologi yang Digunakan</h3>
             <div class="tech-stack">
@@ -59,7 +72,7 @@ class AboutView {
                 <span>JavaScript</span>
               </div>
               <div class="tech-item">
-                <i class="fab fa-webpack"></i>
+                <i class="fab fa-box"></i>
                 <span>Webpack</span>
               </div>
               <div class="tech-item">
@@ -71,20 +84,7 @@ class AboutView {
                 <span>Web Camera API</span>
               </div>
             </div>
-          </div>
-          
-          <!-- Tambahkan bagian untuk notifikasi -->
-          <div class="about-section notification-section">
-            <h3><i class="fas fa-bell"></i> Notifikasi</h3>
-            <p>Dapatkan pemberitahuan tentang cerita baru yang dibagikan.</p>
-            
-            <div class="notification-controls">
-              <button id="notificationBtn" class="btn btn-primary">
-                <i class="fas fa-bell"></i> <span id="notificationBtnText">Aktifkan Notifikasi</span>
-              </button>
-              <p id="notificationStatus" class="notification-status"></p>
-            </div>
-          </div>
+          </div>      
         </div>
       </div>
     `;
