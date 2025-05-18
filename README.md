@@ -11,6 +11,7 @@ Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, memb
 - [Project Structure](#project-structure)
 - [Teknologi](#teknologi)
 - [Fitur Aksesibilitas](#fitur-aksesibilitas)
+- [Demo Aplikasi](#demo-aplikasi)
 
 ## Fitur
 
@@ -21,6 +22,9 @@ Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, memb
 - Multiple layer maps (OpenStreetMap, Satelit, Terrain)
 - Transisi halaman mulus dengan View Transition API
 - Tampilan responsif untuk berbagai ukuran perangkat
+- Progressive Web App (PWA) dengan kemampuan offline
+- Push Notification untuk pemberitahuan cerita baru
+- Penyimpanan lokal menggunakan IndexedDB
 
 ## Getting Started
 
@@ -63,10 +67,16 @@ Story-App/
 ├── src/                    # Source project files
 │   ├── public/             # Public files
 │   │   ├── images/         # Image assets
+│   │   ├── icons/          # App icons for PWA
+│   │   ├── screenshots/    # App screenshots for PWA
+│   │   ├── sw.js           # Service Worker
+│   │   ├── manifest.json   # Web App Manifest
+│   │   ├── offline.html    # Offline fallback page
 │   │   └── favicon.png     # Favicon
 │   ├── scripts/            # Source JavaScript files
 │   │   ├── data/           # Data layer and API services
-│   │   │   └── api.js      # API service
+│   │   │   ├── api.js      # API service
+│   │   │   └── idb-service.js # IndexedDB service
 │   │   ├── mvp/            # Model-View-Presenter architecture
 │   │   │   ├── model/      # Data models
 │   │   │   │   ├── auth-model.js  # Authentication model
@@ -76,14 +86,17 @@ Story-App/
 │   │   │   │   ├── detail-presenter.js
 │   │   │   │   ├── home-presenter.js
 │   │   │   │   ├── login-presenter.js
-│   │   │   │   └── register-presenter.js
+│   │   │   │   ├── register-presenter.js
+│   │   │   │   ├── about-presenter.js
+│   │   │   │   └── not-found-presenter.js
 │   │   │   └── view/       # Views
 │   │   │       ├── about-view.js
 │   │   │       ├── add-story-view.js
 │   │   │       ├── detail-view.js
 │   │   │       ├── home-view.js
 │   │   │       ├── login-view.js
-│   │   │       └── register-view.js
+│   │   │       ├── register-view.js
+│   │   │       └── not-found-view.js
 │   │   ├── pages/          # Page components
 │   │   │   ├── about/      # About page
 │   │   │   │   └── about-page.js
@@ -96,6 +109,8 @@ Story-App/
 │   │   │   │   └── detail-page.js
 │   │   │   ├── home/       # Home page
 │   │   │   │   └── home-page.js
+│   │   │   ├── not-found/  # Not Found page
+│   │   │   │   └── not-found-page.js
 │   │   │   └── app.js      # Main app component
 │   │   ├── routes/         # Routing configuration
 │   │   │   ├── routes.js   # Routes definition
@@ -104,7 +119,10 @@ Story-App/
 │   │   │   └── template-creator.js # Template functions
 │   │   └── utils/          # Utility functions
 │   │       ├── auth-utils.js # Authentication utilities
-│   │       └── map-initializer.js # Map initialization
+│   │       ├── map-initializer.js # Map initialization
+│   │       ├── sw-register.js # Service Worker registration
+│   │       ├── notification-helper.js # Push notification helper
+│   │       └── network-status.js # Network status monitoring
 │   ├── styles/             # Source CSS files
 │   │   └── styles.css      # Main CSS file
 │   └── index.html          # Main HTML file
@@ -126,6 +144,9 @@ Story-App/
 - **CSS3**: Styling modern dengan fitur responsif
 - **HTML5**: Markup semantik untuk aksesibilitas yang lebih baik
 - **MVP Architecture**: Pola Model-View-Presenter untuk pemisahan tanggung jawab
+- **IndexedDB**: Untuk penyimpanan data lokal dan kemampuan offline
+- **Service Worker & Workbox**: Untuk caching dan pengalaman offline
+- **Web Push API**: Untuk implementasi push notification
 
 ## Fitur Aksesibilitas
 
@@ -135,4 +156,12 @@ Story-App/
 - Struktur HTML semantik
 - Desain responsif untuk berbagai perangkat
 - Kontras warna yang memadai untuk keterbacaan
+
+## Demo Aplikasi
+
+Aplikasi ini telah di-deploy dan dapat diakses secara publik melalui:
+
+- **URL**: 
+- **Platform**: 
+
 ```
