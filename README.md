@@ -1,4 +1,3 @@
-```markdown
 # Story App
 
 Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, membagikan, dan menikmati cerita dengan foto dan lokasi. Dibangun dengan JavaScript vanilla dan berbagai Web API modern.
@@ -161,7 +160,7 @@ Story-App/
 
 Aplikasi ini telah di-deploy dan dapat diakses secara publik melalui:
 
-- **URL**: 
-- **Platform**: 
+- **URL**: [https://adrianiaan.github.io/Story-App](https://adrianiaan.github.io/Story-App)
+- **Platform**: GitHub Pages
 
 ```
