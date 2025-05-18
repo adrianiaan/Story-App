@@ -1,119 +1,70 @@
-// Definisikan CACHE_NAME langsung
-const CACHE_NAME = 'StoryApp-V1';
+import { precacheAndRoute } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { StaleWhileRevalidate, NetworkFirst, CacheFirst } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
+import { clientsClaim } from 'workbox-core';
 
-const isDevelopment = false;
+// Aktifkan clientsClaim agar service worker langsung mengontrol halaman
+clientsClaim();
 
-const assetsToCache = [
- './',
-  './icons/android/android-launchericon-48-48.png',
-  './icons/android/android-launchericon-72-72.png',
-  './icons/android/android-launchericon-96-96.png',
-  './icons/android/android-launchericon-144-144.png',
-  './icons/android/android-launchericon-192-192.png',
-  './icons/android/android-launchericon-512-512.png',
-  './index.html',
-  './favicon.png',
-  './app.bundle.js',
-  './manifest.json',
-];
-                      
-// Event install service worker
-self.addEventListener('install', (event) => {
-  console.log('Installing Service Worker...');
-  
-  // Tambahkan precaching di sini
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Caching app shell and content');
-        return cache.addAll(assetsToCache);
-      })
-      .catch((error) => {
-        console.error('Precaching failed:', error);
-      })
-  );
-  
-  // Skip waiting agar service worker langsung aktif
-  self.skipWaiting();
-});
+// Precache semua aset yang di-inject oleh Workbox Webpack Plugin
+precacheAndRoute(self.__WB_MANIFEST || []);
 
-// Event activate service worker
-self.addEventListener('activate', (event) => {
-  console.log('Activating Service Worker...');
-  
-  // Hapus cache lama
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((filteredName) => {
-            console.log(`Deleting old cache: ${filteredName}`);
-            return caches.delete(filteredName);
-          }),
-      );
-    }),
-  );
-  
-  // Klaim klien agar service worker langsung mengontrol halaman
-  self.clients.claim();
-});
+// Cache halaman offline
+registerRoute(
+  ({ url }) => url.pathname === '/offline.html',
+  new CacheFirst()
+);
 
-// Event fetch untuk strategi cache
-self.addEventListener('fetch', (event) => {
-  // Skip caching di mode development
-  if (isDevelopment) {
-    return;
-  }
-  
-  const request = event.request;
-  
-  // Skip permintaan yang bukan GET atau yang menuju ke API
-  if (request.method !== 'GET' || request.url.includes('/api/')) {
-    return;
-  }
-  
-  // Skip permintaan ke webpack-dev-server
-  if (request.url.includes('webpack-dev-server') || 
-      request.url.includes('hot-update') ||
-      request.url.includes('sockjs-node')) {
-    return;
-  }
-  
-  event.respondWith(
-    caches.match(request).then((response) => {
-      return response || fetch(request)
-        .then((fetchResponse) => {
-          // Simpan salinan response ke cache
-          if (fetchResponse && fetchResponse.status === 200) {
-            const responseToCache = fetchResponse.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(request, responseToCache);
-              });
-          }
-          
-          return fetchResponse;
-        })
-        .catch(() => {
-          // Jika offline dan request adalah untuk halaman, kembalikan halaman offline
-          if (request.destination === 'document') {
-            return caches.match('/');
-          }
-          
-          return new Response('Tidak dapat terhubung ke internet', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain',
-            }),
-          });
-        });
-    }),
-  );
-});
+// Cache API dengan NetworkFirst strategy
+registerRoute(
+  ({ url }) => url.origin === 'https://story-api.dicoding.dev',
+  new NetworkFirst({
+    cacheName: 'api-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 60 * 5, // 5 menit
+      }),
+    ],
+  })
+);
 
-// Event untuk push notification
+// Cache gambar dengan CacheFirst strategy
+registerRoute(
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    cacheName: 'images-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 hari
+      }),
+    ],
+  })
+);
+
+// Cache font dan CSS dengan StaleWhileRevalidate strategy
+registerRoute(
+  ({ request }) => 
+    request.destination === 'style' || 
+    request.destination === 'font' ||
+    request.url.includes('fonts.googleapis.com') ||
+    request.url.includes('cdnjs.cloudflare.com'),
+  new StaleWhileRevalidate({
+    cacheName: 'styles-fonts-cache',
+  })
+);
+
+// Cache JavaScript dengan StaleWhileRevalidate strategy
+registerRoute(
+  ({ request }) => request.destination === 'script',
+  new StaleWhileRevalidate({
+    cacheName: 'scripts-cache',
+  })
+);
+
+// Menangani push notification
 self.addEventListener('push', (event) => {
   console.log('Service Worker: Pushed');
 
@@ -184,9 +135,57 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Event untuk message dari klien
+// Event untuk message dari klien (untuk skipWaiting)
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+});
+
+// Menangani sinkronisasi background
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-stories') {
+    event.waitUntil(syncStories());
+  }
+});
+
+// Fungsi untuk sinkronisasi cerita
+async function syncStories() {
+  try {
+    // Implementasi sinkronisasi cerita yang tersimpan offline
+    const cache = await caches.open('pending-stories');
+    const requests = await cache.keys();
+    
+    const syncPromises = requests.map(async (request) => {
+      try {
+        const response = await fetch(request);
+        if (response.ok) {
+          await cache.delete(request);
+          return { success: true, url: request.url };
+        }
+        return { success: false, url: request.url };
+      } catch (error) {
+        console.error('Error syncing story:', error);
+        return { success: false, url: request.url, error };
+      }
+    });
+    
+    return Promise.all(syncPromises);
+  } catch (error) {
+    console.error('Error in syncStories:', error);
+    return [];
+  }
+}
+
+// Fallback ke halaman offline jika tidak ada koneksi
+// Ini akan menangani kasus yang tidak ditangani oleh registerRoute di atas
+self.addEventListener('fetch', (event) => {
+  // Hanya tangani permintaan navigasi (HTML) yang tidak ditangani oleh Workbox
+  if (event.request.mode === 'navigate' && !event.respondWith) {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/offline.html') || caches.match('/');
+      })
+    );
   }
 });

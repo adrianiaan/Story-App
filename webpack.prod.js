@@ -3,9 +3,10 @@ const common = require('./webpack.common');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const webpack = require('webpack');
+const { InjectManifest } = require('workbox-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -60,14 +61,23 @@ module.exports = merge(common, {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    // Tambahkan plugin untuk menandai mode production
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
       'IS_DEVELOPMENT': JSON.stringify(false),
     }),
-    // Tambahkan CopyWebpackPlugin untuk menyalin aset statis
     new CopyWebpackPlugin({
       patterns: [
+        {
+          from: path.resolve(__dirname, 'src/public/offline.html'),
+          to: path.resolve(__dirname, 'dist'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/public/icons'),
+          to: path.resolve(__dirname, 'dist/icons'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/public/screenshots'),
+          to: path.resolve(__dirname, 'dist/screenshots'),
+        },
         {
           from: path.resolve(__dirname, 'src/public/favicon.png'),
           to: path.resolve(__dirname, 'dist'),
@@ -76,7 +86,15 @@ module.exports = merge(common, {
           from: path.resolve(__dirname, 'src/public/manifest.json'),
           to: path.resolve(__dirname, 'dist'),
         },
+        {
+          from: path.resolve(__dirname, 'src/public/images'),
+          to: path.resolve(__dirname, 'dist/images'),
+        },
       ],
+    }),
+    new InjectManifest({
+      swSrc: path.resolve(__dirname, 'src/public/sw.js'),
+      swDest: 'sw.js',
     }),
   ],
 });

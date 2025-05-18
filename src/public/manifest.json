@@ -43,5 +43,57 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+   "shortcuts": [
+    {
+      "name": "Tambah Cerita Baru",
+      "short_name": "Tambah Cerita",
+      "description": "Tambahkan cerita baru dengan foto dan lokasi",
+      "url": "/#/add",
+      "icons": [
+        {
+          "src": "icons/shortcut-add.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Lihat Cerita",
+      "short_name": "Cerita",
+      "description": "Lihat semua cerita",
+      "url": "/#/",
+      "icons": [
+        {
+          "src": "icons/shortcut-stories.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-home.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshots/desktop-add.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/mobile-add.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
   ]
 }
