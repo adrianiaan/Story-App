@@ -77,9 +77,26 @@ const NetworkStatus = {
           this._showToastNotification(
             `${successCount} cerita berhasil disinkronkan`
           );
+
+          // Tambahkan kode untuk refresh halaman setelah sinkronisasi berhasil
+          // Gunakan timeout kecil untuk memastikan toast notification muncul dulu
+          setTimeout(() => {
+            // Cek apakah halaman saat ini adalah halaman offline
+            if (window.location.hash === "#/offline") {
+              window.location.hash = "#/"; // Redirect ke halaman utama
+            } else {
+              // Refresh halaman saat ini dengan mempertahankan URL
+              window.location.reload();
+            }
+          }, 1500); // Tunggu 1.5 detik agar pengguna bisa melihat toast notification
         }
       } else {
         console.log("No pending stories to sync");
+
+        // Jika tidak ada cerita yang perlu disinkronkan tapi halaman saat ini adalah offline
+        if (window.location.hash === "#/offline") {
+          window.location.hash = "#/"; // Redirect ke halaman utama
+        }
       }
     } catch (error) {
       console.error("Error during data sync:", error);
