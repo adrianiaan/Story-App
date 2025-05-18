@@ -162,5 +162,3 @@ Aplikasi ini telah di-deploy dan dapat diakses secara publik melalui:
 
 - **URL**: [https://adrianiaan.github.io/Story-App](https://adrianiaan.github.io/Story-App)
 - **Platform**: GitHub Pages
-
-```
