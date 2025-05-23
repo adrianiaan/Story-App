@@ -83,10 +83,10 @@ self.addEventListener('push', (event) => {
 
   if (event.data) {
     try {
+      // Coba parsing data sebagai JSON
       const dataJson = event.data.json();
       console.log('Received push data:', dataJson);
-      
-      // Format sesuai dengan dokumentasi API
+
       notificationData = {
         title: dataJson.title || notificationData.title,
         options: {
@@ -95,7 +95,11 @@ self.addEventListener('push', (event) => {
         },
       };
     } catch (error) {
-      console.error('Gagal memproses data notifikasi:', error);
+      // Jika gagal parsing JSON, gunakan data text sebagai body notifikasi
+      const dataText = event.data.text();
+      console.log('Received push data as text:', dataText);
+
+      notificationData.options.body = dataText;
     }
   }
 
@@ -104,6 +108,7 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(notificationData.title, notificationData.options)
   );
 });
+
 
 // Event untuk klik notifikasi
 self.addEventListener('notificationclick', (event) => {

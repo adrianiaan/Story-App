@@ -1,18 +1,12 @@
 import { Workbox } from 'workbox-window';
 
 const swRegister = async () => {
-  // Ubah ini menjadi false untuk mengaktifkan Service Worker dalam mode development
   const disableInDevelopment = false;
-  
-  // Cek apakah ini mode development
-  // IS_DEVELOPMENT akan didefinisikan oleh webpack.DefinePlugin
   const isDevelopment = typeof IS_DEVELOPMENT !== 'undefined' ? IS_DEVELOPMENT : 
                         process.env.NODE_ENV === 'development';
-  
+
   if (isDevelopment && disableInDevelopment) {
     console.log('Service Worker dinonaktifkan dalam mode development');
-    
-    // Unregister service worker yang mungkin sudah terdaftar sebelumnya
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();
       for (const registration of registrations) {
@@ -20,7 +14,6 @@ const swRegister = async () => {
         console.log('Service worker berhasil dihapus');
       }
     }
-    
     return;
   }
 
@@ -30,8 +23,9 @@ const swRegister = async () => {
   }
 
   try {
-    const wb = new Workbox('/sw.js');
-    
+    // Gunakan path relatif './sw.js' agar scope sesuai dengan lokasi aplikasi
+    const wb = new Workbox('./sw.js');
+
     wb.addEventListener('installed', (event) => {
       if (!event.isUpdate) {
         console.log('Service Worker berhasil diinstal');
@@ -48,8 +42,6 @@ const swRegister = async () => {
 
     wb.addEventListener('waiting', (event) => {
       console.log('Service Worker baru menunggu untuk mengambil alih');
-      
-      // Tampilkan notifikasi pembaruan jika diperlukan
       if (confirm('Pembaruan tersedia! Muat ulang untuk memperbarui aplikasi?')) {
         wb.messageSkipWaiting();
         window.location.reload();
