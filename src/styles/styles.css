@@ -71,7 +71,7 @@ header {
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   transition: right 0.3s ease;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .navigation-drawer.open {
@@ -386,6 +386,58 @@ header {
   margin-right: 5px;
 }
 
+/* Bookmark Button Styling */
+.bookmark-container {
+  position: relative;
+  margin: 20px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bookmark-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+.bookmark-btn:hover {
+  background-color: #0b5ed7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+}
+
+.bookmark-btn i {
+  font-size: 18px;
+}
+
+.bookmark-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive untuk mobile */
+@media screen and (max-width: 767px) {
+  .bookmark-container {
+    justify-content: center;
+  }
+  
+  .bookmark-btn {
+    width: 100%;
+    max-width: 200px;
+    justify-content: center;
+  }
+}
+
 
 /* Camera */
 .camera-container {
@@ -629,32 +681,6 @@ header {
   color: #ff5252;
 }
 
-/* Connection Status */
-.connection-status {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 10px;
-  text-align: center;
-  z-index: 2000;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.connection-status.online {
-  background-color: #d1e7dd;
-  color: #0f5132;
-}
-
-.connection-status.offline {
-  background-color: #f8d7da;
-  color: #842029;
-}
-
-.connection-status.hidden {
-  transform: translateY(-100%);
-}
 
 /* Notification Section */
 .notification-section {
@@ -739,7 +765,7 @@ header {
   right: 0;
   padding: 10px;
   text-align: center;
-  z-index: 1000;
+  z-index: 2000;
   font-weight: bold;
   transition: opacity 0.3s;
 }
@@ -767,7 +793,7 @@ footer {
 }
 
 /* Responsive */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 769px) {
   .drawer-button {
     display: none;
   }
