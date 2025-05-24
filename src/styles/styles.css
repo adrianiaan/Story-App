@@ -367,6 +367,26 @@ header {
   background-color: #0b5ed7;
 }
 
+.btn-remove-saved {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.btn-remove-saved:hover {
+  background-color: #c82333;
+}
+
+.btn-remove-saved i {
+  margin-right: 5px;
+}
+
+
 /* Camera */
 .camera-container {
   margin-top: 15px;

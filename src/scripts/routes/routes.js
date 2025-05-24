@@ -5,6 +5,8 @@ import LoginPage from '../pages/auth/login-page';
 import RegisterPage from '../pages/auth/register-page';
 import AboutPage from '../pages/about/about-page';
 import NotFoundPage from '../pages/not-found/not-found-page';
+import SavedStoriesPage from '../pages/saved-stories/saved-stories-page';
+
 
 
 const routes = {
@@ -15,6 +17,7 @@ const routes = {
   '/register': new RegisterPage(),
   '/about': new AboutPage(),
   '/not-found': new NotFoundPage(),
+  '/saved': new SavedStoriesPage(),
 };
 
 export default routes;
