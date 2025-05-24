@@ -71,7 +71,7 @@ header {
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   transition: right 0.3s ease;
-  z-index: 1000;
+  z-index: 999;
 }
 
 .navigation-drawer.open {
@@ -681,6 +681,32 @@ header {
   color: #ff5252;
 }
 
+/* Connection Status */
+.connection-status {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  text-align: center;
+  z-index: 2000;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.connection-status.online {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.connection-status.offline {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.connection-status.hidden {
+  transform: translateY(-100%);
+}
 
 /* Notification Section */
 .notification-section {
@@ -765,7 +791,7 @@ header {
   right: 0;
   padding: 10px;
   text-align: center;
-  z-index: 2000;
+  z-index: 1000;
   font-weight: bold;
   transition: opacity 0.3s;
 }
