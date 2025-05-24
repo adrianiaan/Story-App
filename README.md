@@ -1,6 +1,6 @@
 # Story App
 
-Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, membagikan, dan menikmati cerita dengan foto dan lokasi. Dibangun dengan JavaScript vanilla dan berbagai Web API modern.
+Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, membagikan, dan menikmati cerita dengan foto dan lokasi. Dibangun dengan JavaScript vanilla dan berbagai Web API modern. Maaf Untuk Pertama Kali Masuk Website Refresh Terlebih Dahulu Terimakasih.
 
 ## Table of Contents
 
@@ -24,6 +24,8 @@ Aplikasi berbagi cerita sederhana yang memungkinkan pengguna untuk membuat, memb
 - Progressive Web App (PWA) dengan kemampuan offline
 - Push Notification untuk pemberitahuan cerita baru
 - Penyimpanan lokal menggunakan IndexedDB
+- Menyimpan cerita favorit secara offline
+- Mengelola cerita tersimpan (menambah/menghapus)
 
 ## Getting Started
 
@@ -66,7 +68,7 @@ Story-App/
 ├── src/                    # Source project files
 │   ├── public/             # Public files
 │   │   ├── images/         # Image assets
-│   │   ├── icons/          # App icons for PWA
+│   │   ├── icons/         # App icons for PWA
 │   │   ├── screenshots/    # App screenshots for PWA
 │   │   ├── sw.js           # Service Worker
 │   │   ├── manifest.json   # Web App Manifest
@@ -87,6 +89,7 @@ Story-App/
 │   │   │   │   ├── login-presenter.js
 │   │   │   │   ├── register-presenter.js
 │   │   │   │   ├── about-presenter.js
+│   │   │   │   ├── saved-stories-presenter.js
 │   │   │   │   └── not-found-presenter.js
 │   │   │   └── view/       # Views
 │   │   │       ├── about-view.js
@@ -95,6 +98,7 @@ Story-App/
 │   │   │       ├── home-view.js
 │   │   │       ├── login-view.js
 │   │   │       ├── register-view.js
+│   │   │       ├── saved-stories-view.js
 │   │   │       └── not-found-view.js
 │   │   ├── pages/          # Page components
 │   │   │   ├── about/      # About page
